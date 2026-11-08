@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>灵感雷达 · 产品人工作台</title>
+<style>
+  :root{
+    --paper:#F6EDD6; --surface:#FFFCF3;
+    --ink:#23211C; --ink-soft:#5C574C; --ink-faint:#8C8577;
+    --matcha:#7C9A52; --matcha-deep:#5E7A3C; --matcha-soft:#E6EDD6;
+    --orange:#D9532B; --hair:#D9CDB0;
+    --mono:"SF Mono","Menlo","Courier New",monospace;
+    --sans:"PingFang SC","Heiti SC","Hiragino Sans GB",sans-serif;
+    --serif:"Songti SC","STSong","Noto Serif SC",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#E4D6B8;font-family:var(--sans);color:var(--ink);height:100%;margin:0}
+  .app{max-width:1440px;margin:0 auto;height:100%;display:flex;flex-direction:column;background:var(--paper);background-image:radial-gradient(rgba(35,33,28,.035) 1px,transparent 1px),radial-gradient(900px 380px at 82% -12%,rgba(124,154,82,.14),transparent 62%),radial-gradient(700px 300px at 8% -8%,rgba(217,83,43,.07),transparent 60%);background-size:5px 5px,auto,auto;padding:0 26px;overflow:hidden}
+
+  /* 刊头 */
+  .masthead{flex:none;display:flex;align-items:center;gap:20px;height:64px;border-bottom:3px solid var(--ink);position:relative}
+  .masthead::after{content:"";position:absolute;left:0;right:0;bottom:-8px;height:1px;background:var(--ink);opacity:.55}
+  .brand{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+  .logo{width:36px;height:36px;flex:none;display:grid;place-items:center;border:1.5px solid var(--ink);border-radius:50%;background:var(--matcha-soft)}
+  .brand h1{font-family:var(--serif);font-size:24px;font-weight:900;letter-spacing:.06em;line-height:1;-webkit-text-stroke:.3px var(--ink)}
+  .brand .en{font-family:var(--mono);font-size:8px;letter-spacing:.24em;color:var(--ink-soft);margin-top:5px}
+  .status{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:var(--ink-soft);white-space:nowrap}
+  .status .live{display:flex;align-items:center;gap:5px;color:var(--ink)}
+  .status .live i{width:6px;height:6px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 3px rgba(217,83,43,.15);display:inline-block}
+  .status b{color:var(--ink);font-weight:400}
+  .status .sep{width:1px;height:13px;background:var(--hair)}
+  .refresh{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 11px;border:1.5px solid var(--ink);border-radius:999px;background:var(--surface);font-family:var(--mono);font-size:10px;color:var(--ink);letter-spacing:.05em;cursor:pointer;transition:transform .12s}
+  .refresh:hover{transform:translateY(-1px)}
+  .refresh.loading{opacity:.6;pointer-events:none}
+
+  /* 三栏 */
+  .workspace{flex:1;min-height:0;display:grid;grid-template-columns:206px 1fr 340px;gap:0;padding:14px 0;overflow:hidden}
+
+  /* 左栏索引 */
+  .rail{display:flex;flex-direction:column;min-height:0;overflow-y:auto;padding-right:16px;border-right:1px solid var(--hair)}
+  .rail::-webkit-scrollbar{width:6px}
+  .rail::-webkit-scrollbar-thumb{background:rgba(35,33,28,.15);border-radius:3px}
+  .label{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--ink-faint);margin:2px 0 7px}
+  .label:not(:first-child){margin-top:14px}
+  .tab{display:flex;align-items:center;justify-content:space-between;height:28px;padding:0 9px;margin-bottom:2px;border-left:3px solid transparent;font-size:12px;font-weight:700;color:var(--ink-soft);cursor:pointer;border-radius:0 3px 3px 0}
+  .tab b{font-family:var(--mono);font-size:10px;font-weight:400;color:var(--ink-faint)}
+  .tab.on{background:var(--matcha-soft);border-left-color:var(--matcha-deep);color:var(--ink)}
+  .tab.on b{color:var(--matcha-deep)}
+  .catrow{display:grid;grid-template-columns:1fr 52px 24px;align-items:center;gap:7px;height:24px;font-size:11px;color:var(--ink-soft);cursor:pointer}
+  .catrow b{font-family:var(--mono);font-size:9px;font-weight:400;color:var(--ink-faint);text-align:right}
+  .catrow .bar{height:3px;background:rgba(35,33,28,.12);position:relative}
+  .catrow .bar i{position:absolute;inset:0 auto 0 0;background:rgba(124,154,82,.7);transition:width .3s}
+  .catrow.top{color:var(--ink)}
+  .catrow.top .bar i{background:var(--matcha)}
+  .catrow.on{color:var(--matcha-deep);font-weight:700}
+  .srcrow{display:flex;align-items:center;justify-content:space-between;height:21px;font-size:10.5px;color:var(--ink-soft);cursor:pointer}
+  .srcrow b{font-family:var(--mono);font-size:9px;font-weight:400;color:var(--ink-faint)}
+  .srcrow.on{color:var(--matcha-deep);font-weight:700}
+  .pipeline{margin-top:14px;padding:9px 11px 7px;border:1px solid var(--hair);background:var(--surface)}
+  .pipeline .pt{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--ink-faint);margin-bottom:5px}
+  .pipe-row{display:flex;align-items:baseline;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--ink-soft);line-height:1.9}
+  .pipe-row b{font-size:13px;color:var(--ink)}
+  .railfoot{margin-top:auto;border-top:1px solid var(--hair);padding-top:9px;font-family:var(--mono);font-size:8.5px;line-height:1.8;letter-spacing:.04em;color:var(--ink-faint)}
+
+  /* 中栏机会流 */
+  .stream{display:flex;flex-direction:column;min-height:0;overflow:hidden;padding:0 16px}
+  .stream-head{display:flex;align-items:center;gap:8px;padding:0 2px 8px;border-bottom:1.5px solid var(--ink);flex-wrap:wrap}
+  .stream-head .t{font-size:12.5px;font-weight:900;letter-spacing:.1em}
+  .stream-head .t span{font-family:var(--mono);font-size:8px;letter-spacing:.18em;color:var(--matcha-deep);margin-left:6px}
+  .stream-head .controls{margin-left:auto;display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9px;letter-spacing:.05em;color:var(--ink-faint)}
+  .stream-head select{font-family:var(--mono);font-size:9px;color:var(--ink-soft);background:transparent;border:1px solid var(--hair);border-radius:3px;padding:1px 5px}
+  .stream-head .count{color:var(--ink-soft)}
+
+  .lead{display:grid;grid-template-columns:1fr 100px;gap:14px;margin-top:10px;padding:14px 16px;background:var(--surface);border:1px solid var(--hair);border-left:4px solid var(--matcha-deep);box-shadow:0 3px 0 rgba(35,33,28,.06);cursor:pointer;transition:transform .15s}
+  .lead:hover{transform:translateY(-1px)}
+  .lead.selected{box-shadow:0 0 0 2px var(--matcha),4px 4px 0 rgba(94,122,60,.15)}
+  .lead-meta{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:9px;letter-spacing:.05em;color:var(--ink-soft);flex-wrap:wrap}
+  .badge{display:inline-flex;align-items:center;height:18px;padding:0 8px;border-radius:2px;background:var(--matcha-deep);color:#F8F5E8;font-size:9px;font-weight:800;letter-spacing:.1em}
+  .lead-meta .cat{color:var(--matcha-deep);font-weight:700}
+  .lead h2{font-family:var(--serif);font-weight:900;font-size:22px;line-height:1.42;letter-spacing:.01em;-webkit-text-stroke:.3px var(--ink);margin:6px 0 4px}
+  .lead .en{font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:10px;line-height:1.5;color:var(--ink-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lead-side{border-left:1px solid var(--hair);padding-left:12px;display:flex;flex-direction:column;justify-content:space-between}
+  .heatbig .lab{font-family:var(--mono);font-size:8px;letter-spacing:.14em;color:var(--ink-faint)}
+  .heatbig .n{font-family:var(--mono);font-size:32px;font-weight:700;letter-spacing:-.05em;color:var(--orange);line-height:1.05}
+  .heatbig .n span{font-size:11px;color:var(--ink-faint);letter-spacing:0}
+  .heatbig .track{height:4px;background:rgba(35,33,28,.12);position:relative;margin-top:4px}
+  .heatbig .track i{position:absolute;inset:0 auto 0 0;background:var(--orange);transition:width .4s}
+  .lead-go{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:var(--matcha-deep);white-space:nowrap}
+
+  .rows{flex:1;min-height:0;overflow-y:auto;margin-top:8px}
+  .rows::-webkit-scrollbar{width:6px}
+  .rows::-webkit-scrollbar-thumb{background:rgba(35,33,28,.15);border-radius:3px}
+  .row{display:grid;grid-template-columns:36px 1fr 68px;gap:10px;align-items:center;padding:8px 2px;border-bottom:1px solid var(--hair);cursor:pointer;transition:background .12s}
+  .row:hover{background:rgba(124,154,82,.08)}
+  .row.selected{background:rgba(124,154,82,.12);border-left:3px solid var(--matcha-deep);padding-left:0}
+  .row .idx{font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);letter-spacing:.04em}
+  .row-main{min-width:0}
+  .row-meta{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:8.5px;letter-spacing:.03em;color:var(--ink-faint);margin-bottom:2px;flex-wrap:wrap}
+  .row-meta .cat{color:var(--ink-soft);font-weight:700}
+  .row-meta .cat::before{content:"";display:inline-block;width:5px;height:5px;margin-right:4px;vertical-align:1px;background:var(--dotc,var(--matcha));border-radius:2px}
+  .row h3{font-size:13.5px;font-weight:700;line-height:1.3;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .heatcell{text-align:right}
+  .row .heatcell b{font-family:var(--mono);font-size:13px;color:var(--orange);font-weight:700}
+  .row .heatcell .bar{height:3px;background:rgba(35,33,28,.1);margin-top:3px;position:relative}
+  .row .heatcell .bar i{position:absolute;inset:0 auto 0 0;background:var(--orange);opacity:.75;transition:width .3s}
+  .row .star{font-size:11px;margin-left:4px}
+  .row .star.on{color:var(--orange)}
+
+  /* 右栏详情 */
+  .detail{border:1px solid var(--ink);background:var(--surface);display:flex;flex-direction:column;min-height:0;padding:14px 16px;box-shadow:5px 5px 0 rgba(35,33,28,.08);overflow-y:auto}
+  .detail::-webkit-scrollbar{width:6px}
+  .detail::-webkit-scrollbar-thumb{background:rgba(35,33,28,.15);border-radius:3px}
+  .detail-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:200px;color:var(--ink-faint);font-size:12px}
+  .detail-empty .emoji{font-size:36px;opacity:.5}
+  .detail-head{display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;color:var(--ink-faint)}
+  .detail-head .sel{display:flex;align-items:center;gap:5px;color:var(--matcha-deep);letter-spacing:.08em}
+  .detail-head .sel i{width:6px;height:6px;border-radius:50%;background:var(--matcha-deep);display:inline-block}
+  .detail h2{font-family:var(--serif);font-size:16px;font-weight:900;line-height:1.5;letter-spacing:.01em;margin-top:9px;-webkit-text-stroke:.2px var(--ink)}
+  .detail .en{font-family:Georgia,serif;font-style:italic;font-size:9.5px;line-height:1.5;color:var(--ink-faint);margin-top:5px;padding-left:9px;border-left:2px solid var(--matcha-soft);max-height:3em;overflow:hidden}
+  .kv{margin-top:10px;border-top:1px solid var(--ink)}
+  .kv div{display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--hair);font-size:10px}
+  .kv span{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--ink-faint)}
+  .kv b{font-family:var(--mono);font-size:9px;font-weight:400;color:var(--ink)}
+  .kv b.orange{color:var(--orange)}
+  .aihead{display:flex;align-items:baseline;justify-content:space-between;margin-top:11px;padding-top:9px;border-top:2px solid var(--ink)}
+  .aihead .t{font-size:10.5px;font-weight:900;letter-spacing:.1em}
+  .aihead .t span{color:var(--orange)}
+  .aihead .g{font-family:var(--mono);font-size:7.5px;letter-spacing:.06em;color:var(--ink-faint)}
+  .ai{display:flex;flex-direction:column;gap:6px;margin-top:8px;flex:0 0 auto}
+  .ai-item{display:grid;grid-template-columns:18px 1fr;gap:6px;padding-bottom:6px;border-bottom:1px dashed var(--hair)}
+  .ai-item:last-child{border-bottom:0}
+  .ai-item .no{font-family:var(--mono);font-size:8.5px;color:var(--matcha-deep);padding-top:2px}
+  .ai-item h4{font-size:11px;font-weight:800;letter-spacing:.02em}
+  .ai-item p{font-size:9.5px;line-height:1.55;color:var(--ink-soft);margin-top:1px}
+
+  .note{margin-top:9px;padding-top:8px;border-top:1px solid var(--hair);display:flex;flex-direction:column;flex:1;min-height:0}
+  .note-head{display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--ink-faint);margin-bottom:5px}
+  .note-head .t{display:flex;align-items:center;gap:5px;color:var(--ink-soft);letter-spacing:.08em}
+  .note-body{
+    flex:1;min-height:60px;border:1px solid var(--hair);padding:6px 8px;font-size:10px;line-height:1.6;color:var(--ink-soft);
+    background:repeating-linear-gradient(transparent 0 18px,rgba(35,33,28,.055) 18px 19px);
+    resize:none;font-family:var(--sans);outline:none;
+  }
+  .note-body:focus{border-color:var(--matcha)}
+
+  .detail-foot{margin-top:auto;display:flex;align-items:center;gap:7px;padding-top:10px}
+  .fav{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:5px;height:30px;background:var(--ink);color:var(--paper);font-size:11px;font-weight:800;letter-spacing:.04em;border-radius:2px;cursor:pointer;border:none;font-family:var(--sans);transition:transform .12s}
+  .fav:hover{transform:translateY(-1px)}
+  .fav.on{background:var(--matcha-deep)}
+  .orig{display:inline-flex;align-items:center;justify-content:center;height:30px;padding:0 11px;border:1.5px solid var(--ink);font-size:10px;font-weight:700;color:var(--ink);text-decoration:none;cursor:pointer}
+
+  .loading{display:flex;justify-content:center;align-items:center;height:200px;color:var(--ink-faint);font-size:12px;font-family:var(--mono);letter-spacing:.1em}
+  .loading::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--matcha);margin-left:10px;animation:pulse 1.2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+  /* 空状态 */
+  .empty{text-align:center;padding:40px 20px;color:var(--ink-faint);font-size:12px}
+  .empty .big{font-size:40px;opacity:.5;margin-bottom:8px}
+
+  /* data source banner */
+  .source-banner{flex:none;display:flex;align-items:center;gap:8px;padding:6px 12px;border-top:1px solid var(--hair);font-family:var(--mono);font-size:8.5px;letter-spacing:.04em;color:var(--ink-faint);flex-wrap:wrap}
+  .source-banner b{color:var(--ink-soft);font-weight:400}
+  .source-banner .chip{height:18px;padding:0 7px;border-radius:999px;background:var(--matcha-soft);color:var(--matcha-deep);font-size:8px;display:inline-flex;align-items:center}
+
+  .offline-badge{display:inline-flex;align-items:center;gap:4px;height:18px;padding:0 7px;border-radius:3px;background:#F2C27C;color:#7C4B00;font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:.08em}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="masthead">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#23211C" stroke-width="1.6">
+          <path d="M12 12l7-7" stroke="#5E7A3C" stroke-width="2"/>
+          <path d="M12 12a4 4 0 0 0 4 4" stroke="#5E7A3C" stroke-width="2"/>
+          <circle cx="12" cy="12" r="1.6" fill="#D9532B" stroke="none"/>
+          <path d="M4 20a12 12 0 0 1 16-16" stroke="#23211C" stroke-width="1.2" opacity=".5"/>
+        </svg>
+      </div>
+      <div>
+        <h1>灵感雷达</h1>
+        <div class="en">IDEA RADAR · EDITORIAL WORKBENCH</div>
+      </div>
+    </div>
+    <div class="status">
+      <span class="live"><i id="liveDot"></i><span id="liveLabel">连接中…</span></span>
+      <span class="sep"></span>
+      <span><b id="todayDate">—</b></span>
+      <span><b id="updateTime">—</b></span>
+      <span class="sep"></span>
+      <span><b id="complaintCount">0</b> 抱怨 · <b id="oppCount">0</b> 机会</span>
+      <button class="refresh" id="refreshBtn" title="重新抓取 Reddit">↻ 刷新</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+
+    <!-- 左栏 -->
+    <aside class="rail">
+      <div class="label">视图 / VIEW</div>
+      <div class="tab on" data-view="opp">机会 <b id="viewOpp">0</b></div>
+      <div class="tab" data-view="all">全部抱怨 <b id="viewAll">0</b></div>
+      <div class="tab" data-view="fav">收藏 <b id="viewFav">0</b></div>
+
+      <div class="label">品类 / BY CATEGORY</div>
+      <div id="catList"></div>
+
+      <div class="label">数据源 / SOURCES</div>
+      <div id="srcList"></div>
+
+      <div class="pipeline">
+        <div class="pt">今日流水线</div>
+        <div class="pipe-row"><span>抓取抱怨</span><b id="pipeComplaints">0</b></div>
+        <div class="pipe-row"><span>识别机会</span><b id="pipeOpp">0</b></div>
+        <div class="pipe-row"><span>AI 方向</span><b id="pipeDirections">0</b></div>
+      </div>
+
+      <div class="railfoot" id="railFoot">—</div>
+    </aside>
+
+    <!-- 中栏 -->
+    <section class="stream">
+      <div class="stream-head">
+        <div class="t" id="streamTitle">机会流<span id="streamSub">OPPORTUNITY STREAM</span></div>
+        <div class="controls">
+          <select id="sortSelect">
+            <option value="heat">按热度</option>
+            <option value="new">按最新</option>
+            <option value="comments">按评论</option>
+          </select>
+          <span class="count" id="streamCount">—</span>
+        </div>
+      </div>
+      <div class="loading" id="loading">抓取真实 Reddit 数据中</div>
+      <div id="streamBody"></div>
+    </section>
+
+    <!-- 右栏 -->
+    <aside class="detail" id="detail">
+      <div class="detail-empty">
+        <div class="emoji">📰</div>
+        <div>点击左侧卡片，展开详情</div>
+        <div style="font-size:10px;color:var(--ink-faint)">选中后可查看 AI 方向建议 + 调研速记</div>
+      </div>
+    </aside>
+
+  </main>
+
+  <div class="source-banner">
+    <span>数据源：</span>
+    <span class="chip" id="modeChip">连接中…</span>
+    <span><b>Reddit 公开 RSS（代理: 127.0.0.1:7890）</b></span>
+    <span>·</span>
+    <span>规则引擎聚合 AI 方向</span>
+    <span>·</span>
+    <span id="subredditList">r/SomebodyMakeThis · r/mildlyinfuriating · r/CrappyDesign</span>
+    <span>·</span>
+    <span>收藏 / 速记 存 localStorage</span>
+    <span id="offlineBadge" style="display:none" class="offline-badge">离线 · 种子数据</span>
+  </div>
+
+</div>
+
+<script>
+/* ========================================================
+   灵感雷达 SPA · 单文件
+   fetch http://127.0.0.1:8787/api/complaints 拿真实 Reddit 数据
+   失败自动降级到内置 SEED
+   localStorage: idea-radar:favorites, idea-radar:notes
+   ======================================================== */
+
+const API_BASE = "http://127.0.0.1:8787";
+
+// --- 内置种子（兜底） ---
+const SEED = {
+  live: false, mode: "seed", fetchedAt: 0,
+  subreddits: ["SomebodyMakeThis","mildlyinfuriating","CrappyDesign"],
+  translateEngine: "none",
+  complaints: [
+    {id:"seed-1",titleZh:"我想要一台小型、低端、ARM、能跑 Linux 的电子墨水屏笔记本",title:"I would like a small, low-end, ARM based and linux capable laptop with an E-ink display",excerpt:"为什么还没有人做这种东西呢？作为一个极客用户，我愿意为它付钱。",url:"#",subreddit:"SomebodyMakeThis",category:"数码科技",heat:95,comments:120,score:380,createdAt:Date.now()/1000-86400*2,opportunity:true},
+    {id:"seed-2",titleZh:"iPhone duo 折叠屏 75001 次折叠后碎屏",title:"My iPhone duo screen broke after 75001 folds",excerpt:"官方号称 30 万次，我才用了半年就碎了。",url:"#",subreddit:"mildlyinfuriating",category:"数码科技",heat:88,comments:234,score:1200,createdAt:Date.now()/1000-86400*3,opportunity:false},
+    {id:"seed-3",titleZh:"Zillow AI 展示幻觉出整扇不存在的窗",title:"Zillow AI generated a window that doesn't exist",excerpt:"看房时才发现照片里的窗户根本没有，AI 帮我脑补了一个。",url:"#",subreddit:"CrappyDesign",category:"效率工具",heat:72,comments:89,score:450,createdAt:Date.now()/1000-86400*4,opportunity:false},
+    {id:"seed-4",titleZh:"智能地板",title:"Smart Floor — what is it made of and where can I get one?",excerpt:"能感知脚步、测量压力的地板，给老人和宠物用。",url:"#",subreddit:"SomebodyMakeThis",category:"家居生活",heat:68,comments:56,score:280,createdAt:Date.now()/1000-86400*3,opportunity:true},
+    {id:"seed-5",titleZh:"自动驾驶通勤列车，能减少高速堵车吗？",title:"Autonomous commuter trains that reduce highway traffic",excerpt:"地铁化的通勤方案，每 2 分钟一班。",url:"#",subreddit:"SomebodyMakeThis",category:"出行交通",heat:65,comments:112,score:320,createdAt:Date.now()/1000-86400*5,opportunity:true},
+    {id:"seed-6",titleZh:"把孩子日常片段做成只给家人看的记忆 App",title:"An app for sharing child moments only with family",excerpt:"不想被 Facebook 的广告盯上，想有一个私域。",url:"#",subreddit:"SomebodyMakeThis",category:"效率工具",heat:58,comments:67,score:210,createdAt:Date.now()/1000-86400*4,opportunity:true},
+    {id:"seed-7",titleZh:"做成香奈儿 5 号瓶造型的威士忌醒酒器",title:"A whiskey decanter shaped like a Chanel No.5 bottle",excerpt:"收藏级的怪东西，用来招待朋友。",url:"#",subreddit:"SomebodyMakeThis",category:"其他灵感",heat:52,comments:43,score:180,createdAt:Date.now()/1000-86400*6,opportunity:true},
+    {id:"seed-8",titleZh:"卖罐头食品的自动售货机",title:"A vending machine that sells canned food",excerpt:"深夜想吃点东西，但便利店关门了。",url:"#",subreddit:"SomebodyMakeThis",category:"食品饮料",heat:48,comments:38,score:145,createdAt:Date.now()/1000-86400*7,opportunity:true},
+    {id:"seed-9",titleZh:"一家只送汤、炖菜和辣椒的外卖公司",title:"A delivery company for soup, stew and chili only",excerpt:"冬天的第一口热汤，给加班的人。",url:"#",subreddit:"SomebodyMakeThis",category:"食品饮料",heat:42,comments:29,score:98,createdAt:Date.now()/1000-86400*8,opportunity:true},
+    {id:"seed-10",titleZh:"一款呼吸训练器手机 App",title:"Breathalyzer for your phone",excerpt:"用麦克风检测呼吸节奏，引导冥想。",url:"#",subreddit:"SomebodyMakeThis",category:"健康身心",heat:38,comments:22,score:76,createdAt:Date.now()/1000-86400*9,opportunity:true},
+  ]
+};
+
+// AI 方向规则引擎（分类 → 方向建议）
+const AI_RULES = {
+  "数码科技":  [["E-INK 写作本","砍掉浏览器和视频，续航按周算的极简笔记本。"],["开源极客平板","可换电池 + 开源固件，卖给 Linux 开发者与现场工程师。"],["纸感阅读终端","10 英寸 + 订阅内容包，切进深度阅读和学术场景。"]],
+  "食品饮料":  [["场景化外卖","只做一个品类，切进通勤/夜宵/加班场景。"],["预制菜订阅盒","每周 3 道菜 + 半成品，冷链直达。"]],
+  "效率工具":  [["家庭记忆 App","只有家人能看的私密相册 + 日记。"],["任务协作板","把 Trello 简化 80%，只做家庭/小团队。"]],
+  "出行交通":  [["最后一英里","折叠电动车共享停靠点 + 社区地图。"],["通勤信息聚合","一条消息告诉你今天地铁/高速状态。"]],
+  "家居生活":  [["感知家居","地板/门把手/床，能感知人、能提醒。"],["极简整理工具","先帮你扔东西，再管理剩下的。"]],
+  "健康身心":  [["呼吸训练器","用麦克风 + 震动引导冥想。"],["睡眠数据面板","别只说睡了多久，要说深睡在什么时候。"]],
+  "购物服务":  [["保价助手","下单 30 天内降价自动提醒 + 一键差价退款。"],["保修管家","自动聚合所有设备的保修期 + 上门保养提醒。"]],
+  "其他灵感":  [["轻量级创业","先做最小可行版 + 低成本获客，两周上线。"],["订阅式服务","把一个小体验做成月费订阅，给粉丝。"],["工具 + 社区","先做工具解决问题，再聚拢同好。"]],
+};
+
+const CATEGORY_COLORS = {
+  "数码科技":"#5C7A9B","食品饮料":"#D98A6B","效率工具":"#8FAE5F","出行交通":"#9B7AB8",
+  "家居生活":"#B89B6B","健康身心":"#6BB89B","购物服务":"#C98A6B","其他灵感":"#C9A23C",
+};
+
+// 状态
+let state = {
+  complaints: [],
+  view: "opp",        // opp / all / fav
+  sort: "heat",       // heat / new / comments
+  selectedId: null,
+  favorites: new Set(),
+  notes: {},          // {id: text}
+  dataInfo: { live: false, mode: "seed", fetchedAt: 0, subreddits: [] },
+};
+
+// localStorage
+const LS_FAV = "idea-radar:favorites";
+const LS_NOTES = "idea-radar:notes";
+function loadLocal(){
+  try { state.favorites = new Set(JSON.parse(localStorage.getItem(LS_FAV) || "[]")); } catch(e){}
+  try { state.notes = JSON.parse(localStorage.getItem(LS_NOTES) || "{}"); } catch(e){}
+}
+function saveLocal(){
+  try { localStorage.setItem(LS_FAV, JSON.stringify([...state.favorites])); } catch(e){}
+  try { localStorage.setItem(LS_NOTES, JSON.stringify(state.notes)); } catch(e){}
+}
+
+// 时间辅助
+function timeAgo(unixSec){
+  const d = Math.max(0, Math.floor((Date.now()/1000 - unixSec) / 86400));
+  if (d === 0) return "今天";
+  if (d === 1) return "昨天";
+  if (d < 7) return d + " 天前";
+  if (d < 30) return Math.floor(d/7) + " 周前";
+  return Math.floor(d/30) + " 月前";
+}
+function fmtDate(ts){
+  const d = new Date(ts || Date.now());
+  return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,"0")}.${String(d.getDate()).padStart(2,"0")} · 周${["日","一","二","三","四","五","六"][d.getDay()]}`;
+}
+
+// 主流程
+async function loadData(refresh=false){
+  document.getElementById("loading").style.display = "flex";
+  document.getElementById("streamBody").innerHTML = "";
+  let data = null, via = "network";
+  if (API_BASE){
+    try {
+      const url = API_BASE + "/api/complaints" + (refresh ? "?refresh=1" : "");
+      const resp = await fetch(url, { cache: refresh ? "no-cache" : "default" });
+      if (resp.ok) data = await resp.json();
+    } catch(e){ console.warn("[fetch] failed:", e.message); }
+  }
+  if (!data || !Array.isArray(data.complaints)){
+    data = SEED; via = "fallback";
+  }
+  state.complaints = data.complaints || [];
+  state.dataInfo = { live: data.live||false, mode: data.mode||"seed", fetchedAt: data.fetchedAt||0, subreddits: data.subreddits||[] };
+  state.selectedId = state.selectedId && state.complaints.find(c=>c.id===state.selectedId) ? state.selectedId : (state.complaints[0]?.id || null);
+  document.getElementById("loading").style.display = "none";
+  renderAll(via);
+}
+
+// 渲染
+function getFilteredSorted(){
+  let list = state.complaints.slice();
+  if (state.view === "opp") list = list.filter(c => c.opportunity);
+  else if (state.view === "fav") list = list.filter(c => state.favorites.has(c.id));
+  if (state.sort === "heat") list.sort((a,b)=>b.heat-a.heat);
+  else if (state.sort === "new") list.sort((a,b)=>b.createdAt-a.createdAt);
+  else list.sort((a,b)=>b.comments-a.comments);
+  return list;
+}
+
+function renderAll(via="network"){
+  renderMasthead();
+  renderRail();
+  renderStream();
+  renderDetail();
+  renderFooter();
+}
+
+function renderMasthead(){
+  const { live, mode, fetchedAt } = state.dataInfo;
+  document.getElementById("liveLabel").textContent = live ? "RSS 实时" : (mode==="seed" ? "离线 · 种子数据" : "本地文件");
+  document.getElementById("liveDot").style.background = live ? "var(--orange)" : "#999";
+  document.getElementById("todayDate").textContent = fmtDate(Date.now());
+  const t = fetchedAt ? new Date(fetchedAt).toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"}) : "--:--";
+  document.getElementById("updateTime").textContent = t + " 更新";
+  document.getElementById("complaintCount").textContent = state.complaints.length;
+  document.getElementById("oppCount").textContent = state.complaints.filter(c=>c.opportunity).length;
+  document.getElementById("viewOpp").textContent = state.complaints.filter(c=>c.opportunity).length;
+  document.getElementById("viewAll").textContent = state.complaints.length;
+  document.getElementById("viewFav").textContent = state.favorites.size;
+  document.getElementById("refreshBtn").classList.remove("loading");
+}
+
+function renderRail(){
+  // 品类
+  const counts = {}; const oppCounts = {};
+  for (const c of state.complaints){ counts[c.category] = (counts[c.category]||0)+1; if(c.opportunity) oppCounts[c.category] = (oppCounts[c.category]||0)+1; }
+  const cats = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const maxCount = Math.max(...cats.map(([,n])=>n),1);
+  document.getElementById("catList").innerHTML = cats.map(([name,n])=>`
+    <div class="catrow top" data-cat="${name}">
+      <span>${name}</span>
+      <span class="bar"><i style="width:${(n/maxCount*100).toFixed(0)}%"></i></span>
+      <b>${oppCounts[name]||0}/${n}</b>
+    </div>
+  `).join("");
+  document.querySelectorAll("#catList .catrow").forEach(el=>el.addEventListener("click",()=>{
+    document.querySelectorAll("#catList .catrow").forEach(e=>e.classList.remove("on"));
+    el.classList.toggle("on");
+    const cat = el.dataset.cat;
+    state.view = "all";
+    document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on", t.dataset.view==="all"));
+    // 简化：点击品类只高亮，不真正过滤（首屏要全部可见）
+  }));
+
+  // 来源
+  const srcCounts = {};
+  for (const c of state.complaints) srcCounts[c.subreddit] = (srcCounts[c.subreddit]||0)+1;
+  document.getElementById("srcList").innerHTML = Object.entries(srcCounts).sort((a,b)=>b[1]-a[1]).map(([src,n])=>`
+    <div class="srcrow" data-src="${src}"><span>r/${src}</span><b>${n}</b></div>
+  `).join("");
+
+  document.getElementById("pipeComplaints").textContent = state.complaints.length;
+  document.getElementById("pipeOpp").textContent = state.complaints.filter(c=>c.opportunity).length;
+  document.getElementById("pipeDirections").textContent = 3;
+  document.getElementById("railFoot").textContent = `引擎：规则引擎 · 可切 LLM\n模式：${state.dataInfo.mode.toUpperCase()} · 缓存 10min`;
+}
+
+function renderStream(){
+  const list = getFilteredSorted();
+  const titleMap = {opp:"机会流",all:"全部抱怨",fav:"我的收藏"};
+  document.getElementById("streamTitle").innerHTML = `${titleMap[state.view]||"机会流"}<span>${state.view==="opp"?"OPPORTUNITY STREAM":state.view==="fav"?"FAVORITES":"ALL"}</span>`;
+  document.getElementById("streamCount").textContent = `按 ${state.sort==="heat"?"热度↓":state.sort==="new"?"最新":state.sort==="comments"?"评论":""} · ${list.length} / ${state.complaints.length}`;
+
+  if (list.length === 0){
+    document.getElementById("streamBody").innerHTML = `<div class="empty"><div class="big">🔍</div>没有匹配的条目，换个视图试试</div>`;
+    return;
+  }
+
+  const lead = state.view === "opp" ? list.find(c=>c.opportunity) : list[0];
+  const rest = list.filter(c=>c.id !== lead.id).slice(0, 8);  // 最多 8 条
+
+  let html = "";
+  if (lead){
+    html += `
+      <article class="lead ${state.selectedId===lead.id?"selected":""}" data-id="${lead.id}">
+        <div>
+          <div class="lead-meta">
+            <span class="badge">今日头条</span>
+            <span>${lead.category}</span>
+            <span>r/${lead.subreddit}</span>
+            <span>·</span><span>${timeAgo(lead.createdAt)}</span>
+            ${lead.opportunity?'<span style="color:var(--orange);font-weight:700">· 机会帖</span>':''}
+          </div>
+          <h2>${lead.titleZh}</h2>
+          <p class="en">"${(lead.title||lead.excerpt||"").slice(0,80)}"</p>
+        </div>
+        <div class="lead-side">
+          <div class="heatbig">
+            <div class="lab">HEAT / 100</div>
+            <div class="n">${lead.heat}<span>/100</span></div>
+            <div class="track"><i style="width:${lead.heat}%"></i></div>
+          </div>
+          <div class="lead-go">AI 方向见右侧 →</div>
+        </div>
+      </article>
+    `;
+  }
+
+  html += `<div class="rows">`;
+  rest.forEach((c,i)=>{
+    const oppTag = c.opportunity ? `<span class="star on">★</span>` : "";
+    html += `
+      <article class="row ${state.selectedId===c.id?"selected":""}" data-id="${c.id}">
+        <div class="idx">${String(i+2).padStart(2,"0")}</div>
+        <div class="row-main">
+          <div class="row-meta">
+            <span class="cat" style="--dotc:${CATEGORY_COLORS[c.category]||'var(--matcha)'}">${c.category}</span>
+            <span>r/${c.subreddit}</span>
+            <span>·</span><span>${timeAgo(c.createdAt)}</span>
+          </div>
+          <h3>${c.titleZh}</h3>
+        </div>
+        <div class="heatcell">
+          <b>${c.heat}</b>
+          <div class="bar"><i style="width:${c.heat}%"></i></div>
+        </div>
+      </article>
+    `;
+  });
+  html += `</div>`;
+
+  document.getElementById("streamBody").innerHTML = html;
+  document.querySelectorAll(".lead, .row").forEach(el=>el.addEventListener("click", ()=>{
+    state.selectedId = el.dataset.id;
+    renderStream();
+    renderDetail();
+  }));
+}
+
+function renderDetail(){
+  const root = document.getElementById("detail");
+  const c = state.complaints.find(x=>x.id === state.selectedId);
+  if (!c){
+    root.innerHTML = `<div class="detail-empty"><div class="emoji">📰</div><div>点击左侧卡片，展开详情</div><div style="font-size:10px;color:var(--ink-faint)">选中后可查看 AI 方向建议 + 调研速记</div></div>`;
+    return;
+  }
+  const directions = AI_RULES[c.category] || AI_RULES["其他灵感"];
+  const faved = state.favorites.has(c.id);
+  const note = state.notes[c.id] || "";
+  const kvRow = (k,v,isOrange)=>`<div><span>${k}</span><b ${isOrange?'class="orange"':''}>${v}</b></div>`;
+
+  root.innerHTML = `
+    <div class="detail-head">
+      <span>SELECTED / ${c.id.toUpperCase()}</span>
+      <span class="sel"><i></i>已选中</span>
+    </div>
+    <h2>${c.titleZh}</h2>
+    <p class="en">"${(c.title||"").slice(0,120)}</p>
+    <div class="kv">
+      ${kvRow("品类", c.category)}
+      ${kvRow("来源", "r/"+c.subreddit)}
+      ${kvRow("发布", timeAgo(c.createdAt))}
+      ${kvRow("热度", c.heat+" / 100", true)}
+      ${c.opportunity ? kvRow("状态", "机会帖", true) : kvRow("状态", "普通抱怨")}
+    </div>
+    <div class="aihead">
+      <div class="t">AI 方向 <span>/ ${directions.length} 条</span></div>
+      <div class="g">规则引擎 · 可切 LLM</div>
+    </div>
+    <div class="ai">
+      ${directions.map((d,i)=>`
+        <div class="ai-item">
+          <div class="no">${String(i+1).padStart(2,"0")}</div>
+          <div><h4>${d[0]}</h4><p>${d[1]}</p></div>
+        </div>
+      `).join("")}
+    </div>
+    <div class="note">
+      <div class="note-head">
+        <span class="t">✎ 调研速记 / NOTE</span>
+        <span>自动保存</span>
+      </div>
+      <textarea class="note-body" id="noteBody" placeholder="记下你的想法、待验证、风险…">${note}</textarea>
+    </div>
+    <div class="detail-foot">
+      <button class="fav ${faved?'on':''}" id="favBtn">${faved?'★ 已收藏':'☆ 收藏这条'}</button>
+      <a class="orig" href="${c.url||'#'}" target="_blank" rel="noopener">原帖 ↗</a>
+    </div>
+  `;
+
+  // 事件绑定
+  document.getElementById("favBtn").addEventListener("click", ()=>{
+    if (state.favorites.has(c.id)) state.favorites.delete(c.id); else state.favorites.add(c.id);
+    saveLocal();
+    renderStream();
+    renderDetail();
+    renderRail();
+    renderMasthead();
+  });
+  const nb = document.getElementById("noteBody");
+  nb.addEventListener("input", ()=>{
+    state.notes[c.id] = nb.value;
+    saveLocal();
+  });
+}
+
+function renderFooter(){
+  const off = !state.dataInfo.live;
+  document.getElementById("offlineBadge").style.display = off ? "inline-flex" : "none";
+  document.getElementById("modeChip").textContent = state.dataInfo.live ? "RSS 实时" : (state.dataInfo.mode === "seed" ? "种子数据" : "本地文件");
+  document.getElementById("subredditList").textContent = (state.dataInfo.subreddits||[]).map(s=>"r/"+s).join(" · ") || "—";
+}
+
+// 事件绑定（静态）
+document.addEventListener("DOMContentLoaded", ()=>{
+  loadLocal();
+  document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click", ()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));
+    t.classList.add("on");
+    state.view = t.dataset.view;
+    state.selectedId = null;
+    renderStream();
+    renderDetail();
+    renderMasthead();
+  }));
+  document.getElementById("sortSelect").addEventListener("change", e=>{
+    state.sort = e.target.value;
+    renderStream();
+  });
+  document.getElementById("refreshBtn").addEventListener("click", ()=>{
+    document.getElementById("refreshBtn").classList.add("loading");
+    loadData(true);
+  });
+  loadData();
+});
+</script>
+</body>
+</html>

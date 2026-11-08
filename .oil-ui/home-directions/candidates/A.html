@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>灵感雷达 · 首页 A 水彩</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: #E4D6B8;
+    font-family: "PingFang SC", "Songti SC", serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .paper-dot {
+    background-image: radial-gradient(rgba(35,33,28,.07) 1px, transparent 1px);
+    background-size: 5px 5px;
+    background-color: #F6EDD6;
+  }
+  .wrap { width: 1440px; height: 900px; padding: 0 56px; display: flex; flex-direction: column; }
+
+  /* 刊头 */
+  header { display: flex; align-items: center; gap: 14px; height: 78px; flex: none; border-bottom: 3px solid #23211C; position: relative; }
+  header::after { content:""; position: absolute; left:0; right:0; bottom:-7px; height:1px; background:#23211C; opacity:.5; }
+  .logo-badge { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid #23211C; background: #E6EDD6; display: grid; place-items: center; font-size: 18px; }
+  .masthead h1 { font-size: 26px; font-weight: 900; letter-spacing: .04em; color: #23211C; }
+  .masthead p { font-family: "SF Mono", Menlo, monospace; font-size: 8px; letter-spacing: .26em; color: #5C574C; margin-top: 3px; }
+  .header-right { margin-left: auto; font-family: "SF Mono", Menlo, monospace; font-size: 10px; color: #5C574C; letter-spacing: .06em; display: flex; gap: 12px; align-items: center; }
+  .header-right b { font-weight: 500; color: #23211C; }
+
+  /* Hero */
+  .hero { display: grid; grid-template-columns: 470px 1fr; gap: 40px; align-items: center; padding: 34px 0 26px; }
+  .hero-art { width: 470px; height: 380px; position: relative; }
+  .hero-art svg { width: 100%; height: 100%; }
+  .hero-copy .tag { display: inline-flex; align-items: center; gap: 8px; font-family: "SF Mono", Menlo, monospace; font-size: 10px; letter-spacing: .2em; color: #5E7A3C; background: #E6EDD6; border: 1px solid #5E7A3C; padding: 5px 12px; border-radius: 99px; }
+  .hero-copy h2 { font-size: 44px; font-weight: 900; line-height: 1.18; margin: 16px 0 12px; color: #23211C; letter-spacing: .01em; }
+  .hero-copy h2 em { font-style: normal; color: #D9532B; }
+  .hero-copy p.desc { font-size: 15px; color: #5C574C; line-height: 1.7; max-width: 520px; }
+  .hero-cta { margin-top: 22px; display: flex; align-items: center; gap: 18px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; height: 46px; padding: 0 26px; border-radius: 8px; font-size: 15px; font-weight: 800; letter-spacing: .04em; text-decoration: none; }
+  .btn-primary { background: #23211C; color: #F6EDD6; box-shadow: 4px 4px 0 rgba(35,33,28,.18); }
+  .btn-ghost { border: 1.5px solid #23211C; color: #23211C; background: rgba(255,252,243,.5); }
+  .cta-note { font-family: "SF Mono", Menlo, monospace; font-size: 9px; color: #8C8577; letter-spacing: .04em; }
+
+  /* 三步流程 */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .step { border: 1.5px solid #23211C; background: #FFFCF3; padding: 16px 18px; position: relative; }
+  .step .no { font-family: "SF Mono", Menlo, monospace; font-size: 20px; font-weight: 700; color: #D9532B; }
+  .step .t { font-size: 15px; font-weight: 800; margin-top: 4px; color: #23211C; }
+  .step .d { font-size: 11px; color: #5C574C; margin-top: 5px; line-height: 1.6; }
+  .step .icon { position: absolute; top: 14px; right: 16px; font-size: 20px; }
+
+  /* 工作台预览 */
+  .bench-preview { margin-top: 20px; border: 1.5px solid #23211C; background: #FFFCF3; padding: 14px 18px 16px; }
+  .bench-preview .label { font-family: "SF Mono", Menlo, monospace; font-size: 9px; letter-spacing: .18em; color: #8C8577; display: flex; justify-content: space-between; }
+  .cols { display: grid; grid-template-columns: 150px 1fr 120px; gap: 10px; margin-top: 10px; }
+  .col { border: 1px solid #D9CDB0; background: #F6EDD6; height: 66px; border-radius: 4px; position: relative; }
+  .col .bar { position: absolute; left: 8px; right: 8px; height: 6px; border-radius: 3px; background: rgba(124,154,82,.45); }
+  .col .txt { position: absolute; left: 8px; right: 8px; height: 5px; border-radius: 3px; background: rgba(35,33,28,.18); }
+
+  footer { margin-top: auto; padding: 12px 0 10px; font-family: "SF Mono", Menlo, monospace; font-size: 8.5px; letter-spacing: .06em; color: #8C8577; border-top: 1px solid #D9CDB0; display: flex; gap: 16px; }
+</style>
+</head>
+<body>
+<div class="wrap paper-dot">
+  <header>
+    <div class="logo-badge">◎</div>
+    <div class="masthead">
+      <h1>灵感雷达</h1>
+      <p>IDEA RADAR · EDITORIAL WORKBENCH</p>
+    </div>
+    <div class="header-right">
+      <span><b>2026.11.02</b> · 今日 73 条抱怨</span>
+      <span>24 条机会</span>
+      <span>译·DeepSeek</span>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="hero-art">
+      <!-- A 水彩治愈插画 -->
+      <svg viewBox="0 0 470 380" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="blurA" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="14"/></filter>
+          <filter id="blurB" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="9"/></filter>
+          <radialGradient id="sun" cx=".5" cy=".5" r=".5">
+            <stop offset="0%" stop-color="#F2D98F"/><stop offset="100%" stop-color="transparent"/>
+          </radialGradient>
+        </defs>
+        <!-- 水彩晕染底 -->
+        <circle cx="235" cy="195" r="150" fill="url(#sun)" opacity=".8"/>
+        <ellipse cx="150" cy="120" rx="120" ry="70" fill="#7C9A52" opacity=".16" filter="url(#blurA)"/>
+        <ellipse cx="340" cy="300" rx="130" ry="80" fill="#D98A6B" opacity=".13" filter="url(#blurA)"/>
+        <ellipse cx="320" cy="90" rx="90" ry="55" fill="#9B7AB8" opacity=".10" filter="url(#blurA)"/>
+        <ellipse cx="90" cy="300" rx="100" ry="60" fill="#6BB89B" opacity=".12" filter="url(#blurA)"/>
+        <!-- 雷达主体 -->
+        <g opacity=".97">
+          <circle cx="235" cy="205" r="88" fill="#FFFCF3" fill-opacity=".9"/>
+          <circle cx="235" cy="205" r="88" fill="none" stroke="#5E7A3C" stroke-width="2.5"/>
+          <circle cx="235" cy="205" r="58" fill="none" stroke="#7C9A52" stroke-width="1.8" opacity=".7"/>
+          <circle cx="235" cy="205" r="30" fill="none" stroke="#7C9A52" stroke-width="1.8" opacity=".7"/>
+          <line x1="235" y1="205" x2="318" y2="132" stroke="#D9532B" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="318" cy="132" r="6" fill="#D9532B"/>
+          <!-- 气泡 -->
+          <g opacity=".85">
+            <ellipse cx="150" cy="105" rx="42" ry="26" fill="#E6EDD6" stroke="#5E7A3C" stroke-width="1.6"/>
+            <line x1="120" y1="112" x2="180" y2="112" stroke="#5E7A3C" stroke-width="1.4"/>
+            <ellipse cx="360" cy="150" rx="46" ry="28" fill="#FFF3DE" stroke="#C9A23C" stroke-width="1.6"/>
+            <line x1="330" y1="157" x2="390" y2="157" stroke="#C9A23C" stroke-width="1.4"/>
+          </g>
+          <!-- 灯泡 -->
+          <g transform="translate(120 300)">
+            <circle r="16" fill="#F2C94C" opacity=".9"/>
+            <line x1="-18" y1="16" x2="18" y2="16" stroke="#5E7A3C" stroke-width="2" stroke-linecap="round"/>
+            <line x1="-12" y1="23" x2="12" y2="23" stroke="#5E7A3C" stroke-width="2" stroke-linecap="round"/>
+          </g>
+          <g transform="translate(352 292)">
+            <circle r="13" fill="#F2A93C" opacity=".9"/>
+            <line x1="-14" y1="13" x2="14" y2="13" stroke="#5E7A3C" stroke-width="2" stroke-linecap="round"/>
+          </g>
+        </g>
+        <!-- 星光点缀 -->
+        <g stroke="#C9A23C" stroke-width="1.4" stroke-linecap="round" opacity=".7">
+          <path d="M60 60 l6 14 M60 74 l6 -14"/>
+          <path d="M412 40 l5 12 M412 52 l5 -12"/>
+          <path d="M438 236 l4 10 M438 246 l4 -10"/>
+        </g>
+      </svg>
+    </div>
+    <div class="hero-copy">
+      <span class="tag">AI PRODUCT INSPIRATION</span>
+      <h2>把全世界的抱怨，<br/>变成你的<em>下一个产品</em></h2>
+      <p class="desc">灵感雷达每天从 Reddit 抓取人们真正发愁的小事，识别「值得被做出来」的机会，
+        再用 AI 生成产品方向。3 秒扫完 73 条真实抱怨，找到今天最该做的那一个。</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#">进入工作台 →</a>
+        <a class="btn btn-ghost" href="#">看看今日头条</a>
+        <span class="cta-note">RSS 实时 · 10 分钟缓存</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="no">01</div><div class="icon">📡</div>
+      <div class="t">抓取抱怨</div>
+      <div class="d">Reddit 热门版块实时抓取，跳过自动置顶，逐条打分热度。</div>
+    </div>
+    <div class="step">
+      <div class="no">02</div><div class="icon">🎯</div>
+      <div class="t">识别机会</div>
+      <div class="d">许愿句式 + 机会版块双重判定，标出「值得被做出来」的帖子。</div>
+    </div>
+    <div class="step">
+      <div class="no">03</div><div class="icon">💡</div>
+      <div class="t">AI 产品方向</div>
+      <div class="d">DeepSeek 结合抱怨上下文实时生成产品建议，失败自动降级规则引擎。</div>
+    </div>
+  </div>
+
+  <div class="bench-preview">
+    <div class="label"><span>工作台 WORKBENCH · 左栏索引 / 中栏机会流 / 右栏调研</span><span>收藏 · 速记 · 排序</span></div>
+    <div class="cols">
+      <div class="col"><div class="bar" style="top:10px;width:60%"></div><div class="txt" style="top:26px"></div><div class="txt" style="top:36px"></div><div class="txt" style="top:46px"></div></div>
+      <div class="col" style="background:#FFFCF3"><div class="bar" style="top:10px;background:rgba(217,83,43,.55);width:40%"></div><div class="txt" style="top:26px"></div><div class="txt" style="top:36px"></div><div class="txt" style="top:46px"></div></div>
+      <div class="col"><div class="bar" style="top:10px;background:rgba(94,122,60,.7);width:70%"></div><div class="txt" style="top:26px"></div><div class="txt" style="top:36px"></div></div>
+    </div>
+  </div>
+
+  <footer>
+    <span>数据源：r/SomebodyMakeThis · r/mildlyinfuriating · r/CrappyDesign</span>
+    <span>AI 方向：DeepSeek 实时生成 · 无 Key 降级规则引擎</span>
+    <span>收藏 / 速记存 localStorage</span>
+  </footer>
+</div>
+</body>
+</html>

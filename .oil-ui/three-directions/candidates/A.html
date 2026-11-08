@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>A · 晨报头版「今日灵感报」· 首屏</title>
+<style>
+  :root{
+    --paper:#F6EDD6; --surface:#FFFCF3;
+    --ink:#23211C; --ink-soft:#57513F; --ink-faint:#8A826E;
+    --matcha:#7C9A52; --matcha-deep:#5E7A3C; --matcha-soft:#E8EED8;
+    --orange:#D9532B; --seal:#C0392B;
+    --hair:#D9CDB0;
+    --mono:"SF Mono","Menlo","Courier New",monospace;
+    --sans:"PingFang SC","Heiti SC","Hiragino Sans GB",sans-serif;
+    --serif:"Songti SC","STSong","Noto Serif SC",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#E4D6B8;font-family:var(--sans);color:var(--ink)}
+  body{display:flex;justify-content:center;min-height:100vh}
+  .frame{
+    position:relative;width:1440px;height:900px;overflow:hidden;
+    background:var(--paper);
+    background-image:
+      radial-gradient(rgba(35,33,28,.035) 1px,transparent 1px),
+      radial-gradient(900px 340px at 84% -10%,rgba(124,154,82,.15),transparent 60%),
+      radial-gradient(700px 280px at 6% -8%,rgba(217,83,43,.06),transparent 55%);
+    background-size:5px 5px,auto,auto;
+    padding:0 34px;
+  }
+
+  /* ===== 报头 ===== */
+  .masthead{
+    height:64px;display:flex;align-items:center;gap:18px;
+    border-bottom:3px double var(--ink);margin-bottom:16px;
+  }
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .sealmark{
+    width:34px;height:34px;flex:none;display:grid;place-items:center;border-radius:50%;
+    background:var(--matcha);color:#F8F5E8;font-size:17px;font-weight:900;
+    box-shadow:2px 2px 0 rgba(35,33,28,.25);
+  }
+  .brand h1{font-family:var(--serif);font-size:28px;font-weight:900;letter-spacing:.08em;white-space:nowrap;-webkit-text-stroke:.4px var(--ink)}
+  .brand .en{font-family:var(--mono);font-size:8.5px;letter-spacing:.22em;color:var(--ink-faint);margin-top:3px}
+  .meta{display:flex;align-items:center;gap:14px;font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:var(--ink-soft);white-space:nowrap}
+  .meta .live{display:flex;align-items:center;gap:6px;color:var(--ink)}
+  .meta .live i{width:7px;height:7px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 3px rgba(217,83,43,.15)}
+  .meta b{color:var(--ink);font-weight:400}
+  .meta .sep{width:1px;height:13px;background:var(--hair)}
+  .nav{margin-left:auto;display:flex;align-items:center;gap:6px}
+  .chip{
+    height:26px;padding:0 11px;display:inline-flex;align-items:center;gap:6px;
+    border:1px solid var(--ink);border-radius:999px;background:var(--surface);
+    font-family:var(--mono);font-size:9.5px;color:var(--ink);white-space:nowrap;
+  }
+  .chip.on{background:var(--ink);color:var(--paper)}
+  .chip .n{opacity:.65}
+  .chip.mint{background:var(--matcha);border-color:var(--matcha-deep);color:#F8F5E8}
+
+  /* ===== 通栏头条 ===== */
+  .lead{
+    display:grid;grid-template-columns:1fr 168px;gap:22px;align-items:center;
+    background:var(--surface);border:1px solid var(--ink);border-left:6px solid var(--matcha-deep);
+    padding:20px 26px;margin-bottom:18px;position:relative;
+    box-shadow:5px 5px 0 rgba(35,33,28,.07);
+  }
+  .lead .headline-tag{
+    position:absolute;top:-12px;left:-1px;
+    display:inline-flex;align-items:center;gap:7px;height:24px;padding:0 12px;
+    background:var(--ink);color:var(--paper);font-size:10.5px;font-weight:800;letter-spacing:.14em;
+  }
+  .lead .headline-tag::after{content:"";position:absolute;left:0;bottom:-5px;border-left:6px solid var(--ink);border-bottom:5px solid transparent}
+  .lead-meta{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;color:var(--ink-soft)}
+  .lead-meta .cat{color:var(--matcha-deep);font-weight:700}
+  .lead-meta .vol{color:var(--orange);font-weight:700}
+  .lead h2{
+    font-family:var(--serif);font-size:27px;font-weight:900;line-height:1.45;letter-spacing:.01em;
+    margin:10px 0 6px;-webkit-text-stroke:.3px var(--ink);max-width:96%;
+  }
+  .lead .en{
+    font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:11px;color:var(--ink-faint);
+    max-width:92%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .lead-side{display:flex;flex-direction:column;align-items:center;gap:8px;border-left:1px solid var(--hair);padding-left:22px}
+  .lead-side .lab{font-family:var(--mono);font-size:8.5px;letter-spacing:.16em;color:var(--ink-faint)}
+  .lead-side .big{font-family:var(--mono);font-size:42px;font-weight:700;letter-spacing:-.05em;color:var(--orange);line-height:1}
+  .lead-side .big span{font-size:12px;color:var(--ink-faint);letter-spacing:0}
+  .lead-side .track{width:120px;height:4px;background:rgba(35,33,28,.12);position:relative}
+  .lead-side .track i{position:absolute;inset:0 auto 0 0;width:38%;background:var(--orange)}
+  .lead-side .to{font-size:10px;font-weight:700;color:var(--matcha-deep);letter-spacing:.04em}
+
+  /* ===== 剪报网格 ===== */
+  .grid-head{display:flex;align-items:baseline;justify-content:space-between;padding:0 2px 10px}
+  .grid-head .t{font-size:12.5px;font-weight:900;letter-spacing:.12em}
+  .grid-head .t span{font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;color:var(--matcha-deep);margin-left:8px}
+  .grid-head .s{font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--ink-faint)}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:14px;height:400px}
+  .clip{
+    position:relative;background:var(--surface);border:1px solid var(--hair);
+    padding:13px 15px 11px;display:flex;flex-direction:column;min-height:0;
+  }
+  .clip:nth-child(3n+2){transform:translateY(0)}
+  .clip:nth-child(even){background:#FBF4E0}
+  .clip-top{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:9px;letter-spacing:.05em;color:var(--ink-faint)}
+  .clip-top .cat{color:var(--ink-soft);font-weight:700}
+  .clip-top .cat::before{content:"";display:inline-block;width:5px;height:5px;margin-right:5px;background:var(--dotc,var(--matcha));vertical-align:1px}
+  .clip-top .src{margin-left:auto}
+  .clip h3{
+    font-family:var(--serif);font-weight:900;font-size:15.5px;line-height:1.45;letter-spacing:.01em;
+    margin:7px 0 4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  }
+  .clip .en{
+    font-family:Georgia,serif;font-style:italic;font-size:9.5px;color:var(--ink-faint);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .clip-foot{margin-top:auto;display:flex;align-items:center;gap:9px;padding-top:8px;border-top:1px solid var(--hair)}
+  .clip-foot .heat{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9.5px;color:var(--ink-soft)}
+  .clip-foot .heat b{color:var(--orange)}
+  .clip-foot .bar{width:52px;height:3px;background:rgba(35,33,28,.1);position:relative}
+  .clip-foot .bar i{position:absolute;inset:0 auto 0 0;background:var(--orange);opacity:.7}
+  .clip-foot .time{margin-left:auto;font-family:var(--mono);font-size:8.5px;color:var(--ink-faint)}
+  .clip-foot .star{font-size:12px;color:var(--ink-faint)}
+  .clip-foot .star.s{color:var(--matcha-deep)}
+  .sealstamp{
+    position:absolute;top:10px;right:10px;
+    display:grid;place-items:center;width:52px;height:52px;
+    border:2px solid var(--seal);border-radius:4px;color:var(--seal);
+    font-size:15px;font-weight:900;letter-spacing:.06em;transform:rotate(7deg);
+    font-family:var(--serif);opacity:.92;
+    box-shadow:inset 0 0 0 2px rgba(192,57,43,.18);
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <header class="masthead">
+    <div class="brand">
+      <div class="sealmark">灵</div>
+      <div>
+        <h1>今日灵感报</h1>
+        <div class="en">INSPIRATION DAILY · NO.12</div>
+      </div>
+    </div>
+    <div class="meta">
+      <span class="live"><i></i>RSS 实时</span>
+      <span class="sep"></span>
+      <span>2026.11.02 · 周一</span>
+      <span class="sep"></span>
+      <span>今日<b>60</b>条 · 机会<b>20</b>条</span>
+      <span class="sep"></span>
+      <span>免费机译 · 原文对照</span>
+    </div>
+    <nav class="nav">
+      <span class="chip mint">机会 20</span>
+      <span class="chip">全部 60</span>
+      <span class="chip">收藏 3</span>
+    </nav>
+  </header>
+
+  <article class="lead">
+    <div class="headline-tag">今日头条 · LEAD</div>
+    <div>
+      <div class="lead-meta">
+        <span class="cat">数码科技</span><span>r/SomebodyMakeThis</span>
+        <span>·</span><span>2 天前</span><span>·</span><span class="vol">机会帖</span>
+      </div>
+      <h2>我想要一台小型、低端、ARM、能跑 Linux 的电子墨水屏笔记本。</h2>
+      <p class="en">“I would like a small, low-end, ARM based and linux capable laptop with an E-ink display. Why does it not exist?”</p>
+    </div>
+    <div class="lead-side">
+      <span class="lab">HEAT / 100</span>
+      <span class="big">38<span>/100</span></span>
+      <span class="track"><i></i></span>
+      <span class="to">点击读 AI 方向 →</span>
+    </div>
+  </article>
+
+  <div class="grid-head">
+    <div class="t">今日剪报<span>CLIPPINGS</span></div>
+    <div class="s">按热度 ↓ · 6 篇</div>
+  </div>
+
+  <div class="grid">
+    <article class="clip">
+      <div class="clip-top"><span class="cat" style="--dotc:#C9A23C">其他灵感</span><span>r/SomebodyMakeThis</span><span class="src">3 天前</span></div>
+      <h3>智能地板</h3>
+      <p class="en">“Smart Floor — What is it made of? …”</p>
+      <div class="clip-foot">
+        <span class="heat">热度<b>43</b></span><span class="bar"><i style="width:43%"></i></span>
+        <span class="star s">★</span><span class="time">43 热度</span>
+      </div>
+    </article>
+    <article class="clip">
+      <div class="clip-top"><span class="cat" style="--dotc:#C9A23C">其他灵感</span><span>r/SomebodyMakeThis</span><span class="src">4 天前</span></div>
+      <h3>自动驾驶通勤列车，减少高速堵车？</h3>
+      <p class="en">“Autonomous commuter trains that reduce highway traffic.”</p>
+      <div class="clip-foot">
+        <span class="heat">热度<b>42</b></span><span class="bar"><i style="width:42%"></i></span>
+        <span class="star">☆</span><span class="time">42 热度</span>
+      </div>
+    </article>
+    <article class="clip">
+      <div class="clip-top"><span class="cat" style="--dotc:#8FAE5F">效率工具</span><span>r/SomebodyMakeThis</span><span class="src">3 天前</span></div>
+      <h3>把孩子的日常片段，做成只给家人看的记忆 App</h3>
+      <p class="en">“A memory app for family-only childhood moments.”</p>
+      <div class="clip-foot">
+        <span class="heat">热度<b>37</b></span><span class="bar"><i style="width:37%"></i></span>
+        <span class="star s">★</span><span class="time">37 热度</span>
+      </div>
+    </article>
+    <article class="clip">
+      <div class="clip-top"><span class="cat" style="--dotc:#C9A23C">其他灵感</span><span>r/SomebodyMakeThis</span><span class="src">4 天前</span></div>
+      <h3>做成香奈儿 5 号香水瓶的威士忌醒酒器</h3>
+      <p class="en">“A whiskey decanter shaped like a Chanel No.5 bottle.”</p>
+      <div class="clip-foot">
+        <span class="heat">热度<b>35</b></span><span class="bar"><i style="width:35%"></i></span>
+        <span class="star">☆</span><span class="time">35 热度</span>
+      </div>
+    </article>
+    <article class="clip">
+      <div class="clip-top"><span class="cat" style="--dotc:#D98A6B">食品饮料</span><span>r/SomebodyMakeThis</span><span class="src">6 天前</span></div>
+      <h3>卖罐头食品的自动售货机</h3>
+      <p class="en">“Vending machine for canned food.”</p>
+      <div class="clip-foot">
+        <span class="heat">热度<b>32</b></span><span class="bar"><i style="width:32%"></i></span>
+        <span class="star">☆</span><span class="time">32 热度</span>
+      </div>
+      <div class="sealstamp">已剪报</div>
+    </article>
+    <article class="clip">
+      <div class="clip-top"><span class="cat" style="--dotc:#D98A6B">食品饮料</span><span>r/SomebodyMakeThis</span><span class="src">7 天前</span></div>
+      <h3>一家只送汤、炖菜和辣椒的外卖公司</h3>
+      <p class="en">“A delivery company for soup, stew and chili only.”</p>
+      <div class="clip-foot">
+        <span class="heat">热度<b>28</b></span><span class="bar"><i style="width:28%"></i></span>
+        <span class="star">☆</span><span class="time">28 热度</span>
+      </div>
+    </article>
+  </div>
+
+</div>
+</body>
+</html>

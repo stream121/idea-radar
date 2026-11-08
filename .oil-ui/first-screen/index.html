@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>灵感雷达 · 编辑部工作台 · 首屏</title>
+<style>
+  :root{
+    --paper:#F6EDD6;
+    --surface:#FFFCF3;
+    --ink:#23211C;
+    --ink-soft:#5C574C;
+    --ink-faint:#8C8577;
+    --matcha:#7C9A52;
+    --matcha-deep:#5E7A3C;
+    --matcha-soft:#E6EDD6;
+    --orange:#D9532B;
+    --hair:#D9CDB0;
+    --mono:"SF Mono","Menlo","Courier New",monospace;
+    --sans:"PingFang SC","Hiragino Sans GB",sans-serif;
+    --serif:"Songti SC","STSong","Noto Serif SC",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#E4D6B8;font-family:var(--sans);color:var(--ink)}
+  body{display:flex;justify-content:center;align-items:flex-start;min-height:100vh}
+  .frame{
+    position:relative;width:1440px;height:900px;overflow:hidden;
+    background:var(--paper);
+    background-image:
+      radial-gradient(rgba(35,33,28,.035) 1px,transparent 1px),
+      radial-gradient(900px 380px at 82% -12%,rgba(124,154,82,.14),transparent 62%),
+      radial-gradient(700px 300px at 8% -8%,rgba(217,83,43,.07),transparent 60%);
+    background-size:5px 5px,auto,auto;
+    display:grid;grid-template-rows:76px 1fr;
+  }
+
+  /* ============ 刊头（一行） ============ */
+  .masthead{
+    display:flex;align-items:center;gap:20px;padding:0 26px;
+    border-bottom:3px solid var(--ink);position:relative;
+  }
+  .masthead::after{
+    content:"";position:absolute;left:26px;right:26px;bottom:-8px;height:1px;background:var(--ink);opacity:.55;
+  }
+  .brand{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+  .logo{
+    width:38px;height:38px;flex:none;display:grid;place-items:center;
+    border:1.5px solid var(--ink);border-radius:50%;background:var(--matcha-soft);
+  }
+  .brand h1{font-family:var(--serif);font-size:27px;font-weight:900;letter-spacing:.06em;line-height:1;-webkit-text-stroke:.4px var(--ink)}
+  .brand .en{font-family:var(--mono);font-size:9px;letter-spacing:.24em;color:var(--ink-soft);margin-top:5px}
+  .status{display:flex;align-items:center;gap:14px;font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--ink-soft);white-space:nowrap}
+  .status .live{display:flex;align-items:center;gap:6px;color:var(--ink)}
+  .status .live i{width:7px;height:7px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 3px rgba(217,83,43,.15)}
+  .status b{color:var(--ink);font-weight:400}
+  .status .sep{width:1px;height:14px;background:var(--hair)}
+  .refresh{
+    display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;
+    border:1.5px solid var(--ink);border-radius:999px;background:var(--surface);
+    font-family:var(--mono);font-size:10.5px;color:var(--ink);letter-spacing:.05em;
+  }
+
+  /* ============ 主体三栏 ============ */
+  .workspace{
+    min-height:0;display:grid;grid-template-columns:206px 1fr 336px;gap:0;
+    padding:18px 26px 18px;
+  }
+
+  /* ---- 左栏 ---- */
+  .rail{display:flex;flex-direction:column;min-height:0;padding-right:16px;border-right:1px solid var(--hair)}
+  .label{
+    font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--ink-faint);
+    margin:2px 0 7px;
+  }
+  .label:not(:first-child){margin-top:16px}
+  .tab{
+    display:flex;align-items:center;justify-content:space-between;height:30px;
+    padding:0 9px;margin-bottom:2px;border-left:3px solid transparent;
+    font-size:12px;font-weight:700;color:var(--ink-soft);
+  }
+  .tab b{font-family:var(--mono);font-size:10.5px;font-weight:400;color:var(--ink-faint)}
+  .tab.on{background:var(--matcha-soft);border-left-color:var(--matcha-deep);color:var(--ink)}
+  .tab.on b{color:var(--matcha-deep)}
+  .catrow{
+    display:grid;grid-template-columns:1fr 52px 24px;align-items:center;gap:7px;
+    height:26px;font-size:11.5px;color:var(--ink-soft);
+  }
+  .catrow b{font-family:var(--mono);font-size:9.5px;font-weight:400;color:var(--ink-faint);text-align:right}
+  .catrow .bar{height:3px;background:rgba(35,33,28,.12);position:relative}
+  .catrow .bar i{position:absolute;inset:0 auto 0 0;background:rgba(124,154,82,.7)}
+  .catrow.top{color:var(--ink)}
+  .catrow.top .bar i{background:var(--matcha)}
+  .srcrow{display:flex;align-items:center;justify-content:space-between;height:23px;font-size:11px;color:var(--ink-soft)}
+  .srcrow b{font-family:var(--mono);font-size:9.5px;font-weight:400;color:var(--ink-faint)}
+  .pipeline{
+    margin-top:14px;padding:9px 11px 7px;border:1px solid var(--hair);background:var(--surface);
+  }
+  .pipeline .pt{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--ink-faint);margin-bottom:6px}
+  .pipe-row{display:flex;align-items:baseline;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--ink-soft);line-height:1.9}
+  .pipe-row b{font-size:13px;color:var(--ink)}
+  .pipe-row .ar{color:var(--matcha-deep);margin-right:5px}
+  .railfoot{
+    margin-top:auto;border-top:1px solid var(--hair);padding-top:9px;
+    font-family:var(--mono);font-size:9px;line-height:1.75;letter-spacing:.04em;color:var(--ink-faint);
+  }
+
+  /* ---- 中栏：机会流 ---- */
+  .stream{display:flex;flex-direction:column;min-height:0;padding:0 18px 0 18px}
+  .stream-head{display:flex;align-items:baseline;gap:10px;padding:0 2px 8px;border-bottom:1.5px solid var(--ink)}
+  .stream-head .t{font-size:13px;font-weight:900;letter-spacing:.1em}
+  .stream-head .t span{font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--matcha-deep);margin-left:7px}
+  .stream-head .s{margin-left:auto;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;color:var(--ink-faint)}
+
+  .lead{
+    position:relative;margin-top:12px;padding:14px 16px 12px 18px;
+    background:var(--surface);border:1px solid var(--hair);border-left:4px solid var(--matcha-deep);
+    box-shadow:0 3px 0 rgba(35,33,28,.06);
+    display:grid;grid-template-columns:1fr 96px;gap:14px;min-height:0;
+  }
+  .lead .illus{position:absolute;right:116px;top:10px;width:78px;height:78px;opacity:.75;pointer-events:none}
+  .lead-meta{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;color:var(--ink-soft)}
+  .badge{
+    display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:2px;
+    background:var(--matcha-deep);color:#F8F5E8;font-size:10px;font-weight:800;letter-spacing:.1em;
+  }
+  .lead-meta .cat{color:var(--matcha-deep);font-weight:700}
+  .lead h2{
+    font-family:var(--serif);font-weight:900;font-size:25px;line-height:1.4;letter-spacing:.01em;
+    -webkit-text-stroke:.3px var(--ink);margin:8px 0 6px;max-width:92%;
+  }
+  .lead .en{
+    font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:11px;line-height:1.5;
+    color:var(--ink-faint);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;
+    max-width:86%;
+  }
+  .lead-side{
+    border-left:1px solid var(--hair);padding-left:14px;display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .heatbig .lab{font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;color:var(--ink-faint)}
+  .heatbig .n{font-family:var(--mono);font-size:34px;font-weight:700;letter-spacing:-.05em;color:var(--orange);line-height:1.05}
+  .heatbig .n span{font-size:11px;color:var(--ink-faint);letter-spacing:0}
+  .heatbig .track{height:4px;background:rgba(35,33,28,.12);position:relative;margin-top:5px}
+  .heatbig .track i{position:absolute;inset:0 auto 0 0;width:38%;background:var(--orange)}
+  .lead-go{
+    display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--matcha-deep);white-space:nowrap;
+  }
+
+  .rows{flex:1;min-height:0;display:grid;grid-template-rows:repeat(6,1fr);margin-top:8px}
+  .row{
+    min-height:0;display:grid;grid-template-columns:40px 1fr 72px;gap:12px;align-items:center;
+    padding:8px 2px;border-bottom:1px solid var(--hair);
+  }
+  .row:last-child{border-bottom:0}
+  .row .idx{font-family:var(--mono);font-size:10px;color:var(--ink-faint);letter-spacing:.06em}
+  .row-main{min-width:0}
+  .row-meta{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:9px;letter-spacing:.04em;color:var(--ink-faint);margin-bottom:3px}
+  .row-meta .cat{color:var(--ink-soft);font-weight:700}
+  .row-meta .cat::before{
+    content:"";display:inline-block;width:5px;height:5px;margin-right:5px;vertical-align:1px;
+    background:var(--dotc,var(--matcha));
+  }
+  .row h3{
+    font-size:14.5px;font-weight:700;line-height:1.35;color:var(--ink);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .row .heatcell{text-align:right}
+  .row .heatcell b{font-family:var(--mono);font-size:14px;color:var(--orange);font-weight:700}
+  .row .heatcell .bar{height:4px;background:rgba(35,33,28,.1);margin-top:4px;position:relative}
+  .row .heatcell .bar i{position:absolute;inset:0 auto 0 0;background:var(--orange);opacity:.75}
+
+  /* ---- 右栏：选中详情 ---- */
+  .detail{
+    border:1px solid var(--ink);background:var(--surface);
+    display:flex;flex-direction:column;min-height:0;padding:14px 16px 12px;
+    box-shadow:6px 6px 0 rgba(35,33,28,.08);position:relative;
+  }
+  .detail-head{display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--ink-faint)}
+  .detail-head .sel{display:flex;align-items:center;gap:6px;color:var(--matcha-deep);letter-spacing:.08em}
+  .detail-head .sel i{width:6px;height:6px;border-radius:50%;background:var(--matcha-deep)}
+  .detail h2{font-family:var(--serif);font-size:18px;font-weight:900;line-height:1.5;letter-spacing:.01em;margin-top:10px;-webkit-text-stroke:.2px var(--ink)}
+  .detail .en{
+    font-family:Georgia,serif;font-style:italic;font-size:10.5px;line-height:1.5;color:var(--ink-faint);
+    margin-top:6px;padding-left:10px;border-left:2px solid var(--matcha-soft);
+  }
+  .kv{margin-top:11px;border-top:1px solid var(--ink);}
+  .kv div{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--hair);font-size:10.5px}
+  .kv span{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;color:var(--ink-faint)}
+  .kv b{font-family:var(--mono);font-size:9.5px;font-weight:400;color:var(--ink)}
+
+  .aihead{display:flex;align-items:baseline;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:2px solid var(--ink)}
+  .aihead .t{font-size:11px;font-weight:900;letter-spacing:.1em}
+  .aihead .t span{color:var(--orange)}
+  .aihead .g{font-family:var(--mono);font-size:8px;letter-spacing:.06em;color:var(--ink-faint)}
+  .ai{display:flex;flex-direction:column;gap:7px;margin-top:9px}
+  .ai-item{display:grid;grid-template-columns:20px 1fr;gap:7px;padding-bottom:7px;border-bottom:1px dashed var(--hair)}
+  .ai-item:last-child{border-bottom:0}
+  .ai-item .no{font-family:var(--mono);font-size:9px;color:var(--matcha-deep);padding-top:2px}
+  .ai-item h4{font-size:11.5px;font-weight:800;letter-spacing:.02em}
+  .ai-item p{font-size:10px;line-height:1.55;color:var(--ink-soft);margin-top:2px}
+
+  .near{margin-top:8px;border-top:1px solid var(--hair);padding-top:8px}
+  .near-head{display:flex;justify-content:space-between;font-family:var(--mono);font-size:8px;letter-spacing:.1em;color:var(--ink-faint);margin-bottom:4px}
+  .near-row{display:flex;align-items:center;gap:7px;padding:4px 0;font-size:10px;color:var(--ink-soft)}
+  .near-row b{font-family:var(--mono);font-size:9px;color:var(--orange);width:18px}
+  .near-row span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .near-row i{width:40px;height:3px;background:rgba(35,33,28,.1);position:relative}
+  .near-row i em{position:absolute;inset:0 auto 0 0;background:var(--matcha)}
+
+  .note{margin-top:10px;padding-top:9px;border-top:1px solid var(--hair);display:flex;flex-direction:column;flex:1;min-height:0}
+  .note-head{display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;color:var(--ink-faint);margin-bottom:6px}
+  .note-head .t{display:flex;align-items:center;gap:5px;color:var(--ink-soft);letter-spacing:.08em}
+  .note-body{
+    flex:1;min-height:0;border:1px solid var(--hair);padding:7px 9px;overflow:hidden;
+    background:repeating-linear-gradient(transparent 0 23px,rgba(35,33,28,.06) 23px 24px);
+    font-size:10.5px;line-height:24px;color:var(--ink-soft);
+  }
+  .note-body p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .note-body span{color:var(--matcha-deep);margin-right:4px}
+
+  .detail-foot{margin-top:auto;display:flex;align-items:center;gap:8px;padding-top:10px}
+  .fav{
+    flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;
+    background:var(--ink);color:var(--paper);font-size:11.5px;font-weight:800;letter-spacing:.04em;border-radius:2px;
+  }
+  .orig{
+    display:inline-flex;align-items:center;justify-content:center;height:32px;padding:0 12px;
+    border:1.5px solid var(--ink);font-size:10.5px;font-weight:700;color:var(--ink);
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <!-- 刊头 -->
+  <header class="masthead">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#23211C" stroke-width="1.6">
+          <path d="M12 12l7-7" stroke="#5E7A3C" stroke-width="2"/>
+          <path d="M12 12a4 4 0 0 0 4 4" stroke="#5E7A3C" stroke-width="2"/>
+          <circle cx="12" cy="12" r="1.6" fill="#D9532B" stroke="none"/>
+          <path d="M4 20a12 12 0 0 1 16-16" stroke="#23211C" stroke-width="1.2" opacity=".5"/>
+        </svg>
+      </div>
+      <div>
+        <h1>灵感雷达</h1>
+        <div class="en">IDEA RADAR · EDITORIAL WORKBENCH</div>
+      </div>
+    </div>
+    <div class="status">
+      <span class="live"><i></i>RSS 实时</span>
+      <span class="sep"></span>
+      <span><b>2026.11.02</b> 星期一</span>
+      <span><b>09:41</b> 更新</span>
+      <span class="sep"></span>
+      <span><b>60</b> 条抱怨 · <b>20</b> 条机会</span>
+      <button class="refresh">↻ 刷新</button>
+    </div>
+  </header>
+
+  <!-- 工作台 -->
+  <main class="workspace">
+
+    <!-- 左栏：索引 -->
+    <aside class="rail">
+      <div class="label">视图 / VIEW</div>
+      <div class="tab on">机会 <b>20</b></div>
+      <div class="tab">全部抱怨 <b>60</b></div>
+      <div class="tab">收藏 <b>3</b></div>
+
+      <div class="label">品类索引 / BY CATEGORY</div>
+      <div class="catrow top"><span>其他灵感</span><span class="bar"><i style="width:100%"></i></span><b>42</b></div>
+      <div class="catrow top"><span>数码科技</span><span class="bar"><i style="width:14%"></i></span><b>6</b></div>
+      <div class="catrow"><span>食品饮料</span><span class="bar"><i style="width:7%"></i></span><b>3</b></div>
+      <div class="catrow"><span>效率工具</span><span class="bar"><i style="width:7%"></i></span><b>3</b></div>
+      <div class="catrow"><span>出行交通</span><span class="bar"><i style="width:5%"></i></span><b>2</b></div>
+      <div class="catrow"><span>家居生活</span><span class="bar"><i style="width:5%"></i></span><b>2</b></div>
+      <div class="catrow"><span>购物服务</span><span class="bar"><i style="width:2%"></i></span><b>1</b></div>
+      <div class="catrow"><span>健康身心</span><span class="bar"><i style="width:2%"></i></span><b>1</b></div>
+
+      <div class="label">数据源 / SOURCES</div>
+      <div class="srcrow"><span>r/mildlyinfuriating</span><b>29</b></div>
+      <div class="srcrow"><span>r/SomebodyMakeThis</span><b>20</b></div>
+      <div class="srcrow"><span>r/CrappyDesign</span><b>11</b></div>
+
+      <div class="pipeline">
+        <div class="pt">今日流水线</div>
+        <div class="pipe-row"><span>抓取抱怨</span><b>60</b></div>
+        <div class="pipe-row"><span>识别机会</span><b>20</b></div>
+        <div class="pipe-row"><span>AI 方向</span><b>3</b></div>
+      </div>
+
+      <div class="railfoot">翻译引擎：免费机译<br>中文译文 + 原文对照<br>缓存 10 分钟 · RSS 精简模式</div>
+    </aside>
+
+    <!-- 中栏：机会流 -->
+    <section class="stream">
+      <div class="stream-head">
+        <div class="t">机会流<span>OPPORTUNITY STREAM</span></div>
+        <div class="s">按热度 ↓ · 20 / 60</div>
+      </div>
+
+      <article class="lead">
+        <svg class="illus" viewBox="0 0 80 80" fill="none">
+          <rect x="14" y="18" width="44" height="50" rx="2" stroke="#7C9A52" stroke-width="1.2" opacity=".55"/>
+          <path d="M20 30h32M20 38h24M20 46h28" stroke="#23211C" stroke-width="1" opacity=".28"/>
+          <path d="M58 20l4 4-9 12" stroke="#D9532B" stroke-width="1.2" opacity=".7"/>
+          <circle cx="64" cy="16" r="6.5" stroke="#7C9A52" stroke-width="1.4"/>
+          <path d="M64 12.5v4M64 19v.8" stroke="#7C9A52" stroke-width="1.6"/>
+        </svg>
+        <div class="lead-main">
+          <div class="lead-meta">
+            <span class="badge">今日头条</span>
+            <span class="cat">数码科技</span>
+            <span>r/SomebodyMakeThis</span>
+            <span>·</span>
+            <span>2 天前</span>
+          </div>
+          <h2>我想要一台小型、低端、ARM、能跑 Linux 的电子墨水屏笔记本。</h2>
+          <p class="en">“I would like a small, low-end, ARM based and linux capable laptop with an E-ink display. Why does it not exist?”</p>
+        </div>
+        <div class="lead-side">
+          <div class="heatbig">
+            <div class="lab">HEAT / 100</div>
+            <div class="n">38<span>/100</span></div>
+            <div class="track"><i></i></div>
+          </div>
+          <div class="lead-go">AI 方向见右侧 →</div>
+        </div>
+      </article>
+
+      <div class="rows">
+        <article class="row">
+          <div class="idx">S-02</div>
+          <div class="row-main">
+            <div class="row-meta"><span class="cat" style="--dotc:#C9A23C">其他灵感</span><span>r/SomebodyMakeThis</span><span>3 天前</span></div>
+            <h3>智能地板</h3>
+          </div>
+          <div class="heatcell"><b>43</b><div class="bar"><i style="width:43%"></i></div></div>
+        </article>
+        <article class="row">
+          <div class="idx">S-03</div>
+          <div class="row-main">
+            <div class="row-meta"><span class="cat" style="--dotc:#C9A23C">其他灵感</span><span>r/SomebodyMakeThis</span><span>4 天前</span></div>
+            <h3>自动驾驶通勤列车，能减少高速堵车？</h3>
+          </div>
+          <div class="heatcell"><b>42</b><div class="bar"><i style="width:42%"></i></div></div>
+        </article>
+        <article class="row">
+          <div class="idx">S-04</div>
+          <div class="row-main">
+            <div class="row-meta"><span class="cat" style="--dotc:#8FAE5F">效率工具</span><span>r/SomebodyMakeThis</span><span>3 天前</span></div>
+            <h3>把孩子的日常片段，做成只给家人看的记忆 App</h3>
+          </div>
+          <div class="heatcell"><b>37</b><div class="bar"><i style="width:37%"></i></div></div>
+        </article>
+        <article class="row">
+          <div class="idx">S-05</div>
+          <div class="row-main">
+            <div class="row-meta"><span class="cat" style="--dotc:#C9A23C">其他灵感</span><span>r/SomebodyMakeThis</span><span>4 天前</span></div>
+            <h3>做成香奈儿 5 号香水瓶的威士忌醒酒器</h3>
+          </div>
+          <div class="heatcell"><b>35</b><div class="bar"><i style="width:35%"></i></div></div>
+        </article>
+        <article class="row">
+          <div class="idx">S-06</div>
+          <div class="row-main">
+            <div class="row-meta"><span class="cat" style="--dotc:#D98A6B">食品饮料</span><span>r/SomebodyMakeThis</span><span>6 天前</span></div>
+            <h3>卖罐头食品的自动售货机</h3>
+          </div>
+          <div class="heatcell"><b>32</b><div class="bar"><i style="width:32%"></i></div></div>
+        </article>
+        <article class="row">
+          <div class="idx">S-07</div>
+          <div class="row-main">
+            <div class="row-meta"><span class="cat" style="--dotc:#D98A6B">食品饮料</span><span>r/SomebodyMakeThis</span><span>7 天前</span></div>
+            <h3>一家只送汤、炖菜和辣椒的外卖公司</h3>
+          </div>
+          <div class="heatcell"><b>28</b><div class="bar"><i style="width:28%"></i></div></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 右栏：选中详情 + AI 方向 -->
+    <aside class="detail">
+      <div class="detail-head">
+        <span>SELECTED / S-01</span>
+        <span class="sel"><i></i>已选中</span>
+      </div>
+
+      <h2>我想要一台小型、低端、基于 ARM 且支持 Linux、带有电子墨水显示屏的笔记本电脑。</h2>
+      <p class="en">“I would like a small, low-end, ARM based and linux capable laptop with an E-ink display. Would anyone else be interested? Why does it not exist?”</p>
+
+      <div class="kv">
+        <div><span>品类</span><b>数码科技</b></div>
+        <div><span>来源</span><b>r/SomebodyMakeThis</b></div>
+        <div><span>发布</span><b>2 天前</b></div>
+        <div><span>热度</span><b>38 / 100</b></div>
+        <div><span>状态</span><b style="color:#D9532B">机会帖</b></div>
+      </div>
+
+      <div class="aihead">
+        <div class="t">AI 方向 <span>/ 3 条</span></div>
+        <div class="g">规则引擎 · 可切 LLM</div>
+      </div>
+      <div class="ai">
+        <div class="ai-item">
+          <div class="no">01</div>
+          <div><h4>E-INK 写作本</h4><p>只留文字与手写，砍掉浏览器和视频，续航按周算。</p></div>
+        </div>
+        <div class="ai-item">
+          <div class="no">02</div>
+          <div><h4>开源极客平板</h4><p>可换电池 + 开源固件，卖给 Linux 开发者与现场工程师。</p></div>
+        </div>
+        <div class="ai-item" style="border-bottom:0">
+          <div class="no">03</div>
+          <div><h4>纸感阅读终端</h4><p>10 英寸 + 订阅内容包，切进深度阅读和学术场景。</p></div>
+        </div>
+      </div>
+
+      <div class="note">
+        <div class="note-head">
+          <span class="t">
+            <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="#7C9A52" stroke-width="1.3"><path d="M11 2l3 3-8 8H3v-3z"/></svg>
+            调研速记 / NOTE
+          </span>
+          <span>自动保存</span>
+        </div>
+        <div class="note-body">
+          <p><span>·</span>目标人群：极简写作 + 工程师</p>
+          <p><span>·</span>差异化：砍掉浏览器，续航按周</p>
+          <p><span>·</span>待验证：墨水屏成本能否压到 3000 内</p>
+        </div>
+      </div>
+
+      <div class="detail-foot">
+        <span class="fav">★ 收藏这条</span>
+        <span class="orig">原帖 ↗</span>
+      </div>
+    </aside>
+
+  </main>
+</div>
+</body>
+</html>

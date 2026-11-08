@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>风格 C · 治愈系柔和</title>
+<style>
+  :root{
+    --paper:#F6EFE3; --surface:#FFFDF7; --ink:#4A4638; --ink-soft:#7A745F; --ink-faint:#A39B82;
+    --matcha:#A8C08E; --matcha-deep:#7C9A52; --matcha-soft:#EEF2E0; --persimmon:#E08A5C;
+    --cream:#F3E7C8; --peach:#F6DFC8; --hair:#E2D8BE; --backdrop:#F0E6D0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--backdrop);font-family:"PingFang SC","Heiti SC",sans-serif;color:var(--ink);
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:1440px;margin:0 auto;min-height:100vh;background:
+    linear-gradient(160deg,#FBF4E6 0%,#F6EFE3 45%,#F3EBD9 100%);
+    padding:0 56px;display:flex;flex-direction:column}
+  header{display:flex;height:78px;align-items:center;gap:16px;border-bottom:1.5px solid var(--hair)}
+  .logo{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;
+    background:linear-gradient(135deg,#F3E7C8,#A8C08E);color:var(--ink);font-size:18px;
+    box-shadow:0 6px 16px rgba(74,70,56,.12)}
+  h1{font-family:"Songti SC",serif;font-size:26px;font-weight:700;letter-spacing:.06em}
+  .en{font-family:Menlo,monospace;font-size:10px;letter-spacing:.26em;color:var(--ink-soft);margin-top:2px}
+  .status{margin-left:auto;display:flex;gap:10px}
+  .chip{font-family:Menlo,monospace;font-size:12px;border-radius:999px;
+    background:rgba(255,253,247,.85);padding:7px 16px;font-weight:600;white-space:nowrap;
+    box-shadow:0 3px 10px rgba(74,70,56,.06);color:var(--ink-soft)}
+  /* hero */
+  .hero{display:grid;grid-template-columns:470px 1fr;gap:40px;align-items:center;padding:52px 0 40px}
+  .art{width:470px;height:380px;position:relative}
+  .hero h2{font-family:"Songti SC",serif;font-size:42px;font-weight:700;line-height:1.25;color:var(--ink)}
+  .tag{display:inline-flex;align-items:center;gap:6px;border-radius:999px;
+    background:var(--matcha-soft);color:var(--matcha-deep);font-family:Menlo,monospace;
+    font-size:12px;font-weight:600;letter-spacing:.12em;padding:7px 16px;margin-bottom:16px;
+    box-shadow:0 3px 10px rgba(124,154,82,.12)}
+  .hero p{max-width:520px;font-size:16px;line-height:2;color:var(--ink-soft);margin:12px 0 26px}
+  .cta-row{display:flex;gap:16px;align-items:center}
+  .cta{display:inline-flex;height:50px;align-items:center;border-radius:18px;padding:0 30px;
+    font-size:16px;font-weight:700;text-decoration:none;transition:.15s}
+  .cta:hover{transform:translateY(-2px)}
+  .cta-main{background:linear-gradient(135deg,#E08A5C,#D9532B);color:#FFFDF7;
+    box-shadow:0 8px 20px rgba(217,83,43,.25)}
+  .cta-ghost{background:rgba(255,253,247,.9);color:var(--ink);box-shadow:0 6px 16px rgba(74,70,56,.1)}
+  .meta{font-family:Menlo,monospace;font-size:11px;color:var(--ink-faint)}
+  /* 三步 */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .card{border-radius:22px;padding:22px;box-shadow:0 10px 24px rgba(74,70,56,.08)}
+  .c1{background:var(--cream)} .c2{background:var(--matcha-soft)} .c3{background:var(--peach)}
+  .num{font-family:Menlo,monospace;font-size:13px;font-weight:700;color:var(--matcha-deep);letter-spacing:.08em}
+  .card h3{font-size:17px;font-weight:700;margin:10px 0 6px;font-family:"Songti SC",serif}
+  .card p{font-size:13px;line-height:2;color:var(--ink-soft)}
+  /* 预览 */
+  .preview{margin-top:26px;border-radius:22px;background:rgba(255,253,247,.85);
+    padding:18px;box-shadow:0 10px 24px rgba(74,70,56,.08)}
+  .pv-head{display:flex;justify-content:space-between;font-family:Menlo,monospace;font-size:11px;
+    letter-spacing:.1em;color:var(--ink-faint)}
+  .pv-grid{display:grid;grid-template-columns:170px 1fr 150px;gap:10px;margin-top:10px}
+  .pv{height:120px;border-radius:14px;background:var(--paper);padding:8px 10px;
+    display:flex;flex-direction:column;gap:5px;box-shadow:inset 0 2px 6px rgba(74,70,56,.06)}
+  .pv-label{font-family:Menlo,monospace;font-size:9px;letter-spacing:.1em;color:var(--ink-faint);margin-bottom:2px}
+  .pv-title{font-size:12px;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pv-sub{font-size:9.5px;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pv-tag{display:inline-flex;align-items:center;font-size:8.5px;font-weight:700;border-radius:8px;padding:2px 8px;align-self:flex-start}
+  .pv-heat{margin-left:auto;font-family:Menlo,monospace;font-size:9px;font-weight:700;color:#E08A5C}
+  footer{margin-top:auto;display:flex;gap:16px;align-items:center;border-top:1px solid var(--hair);
+    padding:10px 0;font-family:Menlo,monospace;font-size:10px;color:var(--ink-faint)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">◎</div>
+    <div>
+      <h1>灵感雷达</h1>
+      <div class="en">IDEA RADAR · EDITORIAL WORKBENCH</div>
+    </div>
+    <div class="status">
+      <span class="chip">2026.11.03 · 周二</span>
+      <span class="chip">73 条抱怨</span>
+      <span class="chip">18 条机会</span>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="art">
+      <svg viewBox="0 0 470 380" width="470" height="380" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="soft"><feGaussianBlur stdDeviation="1.4"/></filter>
+        </defs>
+        <!-- 水彩插画：柔和渐变 + 模糊边缘 -->
+        <rect x="30" y="60" width="410" height="270" rx="30" fill="#F3E7C8" transform="rotate(-2 235 195)"/>
+        <g transform="rotate(-6 235 195)" filter="url(#soft)">
+          <circle cx="235" cy="195" r="88" fill="#EEF2E0"/>
+          <circle cx="235" cy="195" r="60" fill="rgba(168,192,142,.6)"/>
+          <circle cx="235" cy="195" r="30" fill="rgba(124,154,82,.7)"/>
+        </g>
+        <path d="M235 195 L306 130" stroke="#E08A5C" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="306" cy="130" r="10" fill="#F6DFC8" stroke="#E08A5C" stroke-width="2"/>
+        <g transform="rotate(8 100 120)" filter="url(#soft)">
+          <circle cx="100" cy="120" r="28" fill="#F3E7C8"/>
+          <circle cx="100" cy="120" r="18" fill="#A8C08E"/>
+        </g>
+        <g transform="rotate(-5 372 96)" filter="url(#soft)">
+          <rect x="330" y="70" width="86" height="52" rx="18" fill="#EEF2E0"/>
+          <line x1="344" y1="90" x2="402" y2="90" stroke="#A8C08E" stroke-width="3" stroke-linecap="round"/>
+          <line x1="344" y1="104" x2="390" y2="104" stroke="#A8C08E" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+        </g>
+        <path d="M400 300 l9 20 22 3 -16 16 4 22 -19 -10 -19 10 4 -22 -16 -16 22 -3 z" fill="#E08A5C" opacity=".85"/>
+        <g transform="rotate(-10 66 292)" filter="url(#soft)">
+          <circle cx="66" cy="292" r="24" fill="#F6DFC8"/>
+          <circle cx="66" cy="290" r="14" fill="#A8C08E"/>
+        </g>
+        <g transform="rotate(6 300 330)" filter="url(#soft)">
+          <circle cx="288" cy="308" r="8" fill="#A8C08E"/>
+          <circle cx="312" cy="308" r="8" fill="#A8C08E"/>
+          <circle cx="300" cy="330" r="7" fill="#F3E7C8"/>
+        </g>
+      </svg>
+    </div>
+    <div>
+      <span class="tag">AI PRODUCT INSPIRATION</span>
+      <h2>把全世界的抱怨，<br>变成你的<span style="color:#D9532B">下一个产品</span></h2>
+      <p>灵感雷达每天从 Reddit 抓取人们真正发愁的小事，识别「值得被做出来」的机会，再用 AI 生成产品方向。3 秒扫完 73 条真实抱怨，找到今天最该做的那一个。</p>
+      <div class="cta-row">
+        <a class="cta cta-main" href="#">进入工作台 →</a>
+        <a class="cta cta-ghost" href="#">看看今日头条</a>
+        <span class="meta">RSS 实时 · 10 分钟缓存</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="steps">
+    <div class="card c1"><div class="num">01 · GRAB</div><h3>抓取抱怨</h3><p>Reddit 热门版块实时抓取，跳过自动置顶，逐条打分热度。</p></div>
+    <div class="card c2"><div class="num">02 · SPOT</div><h3>识别机会</h3><p>许愿句式 + 机会版块双重判定，标出值得被做出来的帖子。</p></div>
+    <div class="card c3"><div class="num">03 · IDEA</div><h3>AI 产品方向</h3><p>DeepSeek 结合抱怨上下文实时生成产品建议，失败自动降级规则引擎。</p></div>
+  </section>
+
+  <section class="preview">
+    <div class="pv-head"><span>工作台 WORKBENCH · 左栏索引 / 中栏机会流 / 右栏调研</span><span>收藏 · 速记 · 排序</span></div>
+    <div class="pv-grid">
+      <div class="pv">
+        <span class="pv-label">左栏 · 品类索引</span>
+        <span class="pv-title">数码科技 16</span>
+        <span class="pv-sub">食品饮料 12</span>
+        <span class="pv-sub">效率工具 11</span>
+        <span class="pv-tag" style="background:var(--matcha-soft);color:var(--matcha-deep)">机会 18</span>
+      </div>
+      <div class="pv">
+        <span class="pv-label">中栏 · 机会流</span>
+        <span class="pv-title">有什么发明能真正提升生活质量？</span>
+        <span class="pv-sub">r/SomebodyMakeThis · 数码科技</span>
+        <span class="pv-tag" style="background:var(--peach);color:#D9532B">机会帖</span>
+        <span class="pv-heat">HEAT 92</span>
+      </div>
+      <div class="pv">
+        <span class="pv-label">右栏 · 调研速记</span>
+        <span class="pv-title">AI 方向：3 条</span>
+        <span class="pv-sub">✎ 速记已保存 2 条</span>
+        <span class="pv-tag" style="background:var(--matcha);color:var(--surface)">收藏 5</span>
+      </div>
+    </div>
+  </section>
+
+  <footer><span>数据源：r/SomebodyMakeThis · r/mildlyinfuriating · r/CrappyDesign</span><span>·</span><span>AI 方向：DeepSeek 实时生成</span><span>·</span><span>收藏 / 速记存 localStorage</span></footer>
+</div>
+</body>
+</html>
